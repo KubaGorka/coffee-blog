@@ -1,0 +1,21 @@
+@import "mixins";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+.App > * {
+  @include sideSpace;
+}
+a {
+  text-decoration: none;
+  color: #000;
+}
+ul,
+ol {
+  list-style: none;
+}
+.App{
+  overflow-x: hidden;
+}

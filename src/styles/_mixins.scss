@@ -1,0 +1,53 @@
+@import "./variables";
+@mixin sideSpace {
+  padding: 0 2.5%;
+  @media (min-width: $bp-medium) {
+    padding: 0 5%;
+  }
+
+  @media (min-width: $bp-large) {
+    padding: 0 10%;
+  }
+
+  @media (min-width: $bp-xlarge) {
+    padding: 0 15%;
+  }
+}
+
+@mixin logo {
+  text-align: center;
+  h1 {
+    font-size: 3rem;
+  }
+
+  p {
+    font-variant: small-caps;
+    color: $DarkGrey;
+    position: relative;
+    top: -0.8rem;
+    &:first-letter {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (min-width: $bp-medium) {
+    h1 {
+      font-size: 3.5rem;
+    }
+
+    p {
+      top: -1rem;
+      font-size: 1.125rem;
+    }
+  }
+
+  @media (min-width: $bp-large) {
+    h1 {
+      font-size: 4rem;
+    }
+
+    p {
+      font-size: 1.25rem;
+    }
+  }
+}
