@@ -2,6 +2,7 @@
 @import "../../styles/mixins";
 
 .container {
+  overflow: hidden;
   position: sticky;
   top: 0;
   left: 0;
@@ -19,6 +20,7 @@
   .logo {
     @include logo;
     justify-self: start;
+    user-select: none;
   }
 
   .login {
@@ -38,6 +40,7 @@
     align-items: center;
     justify-content: center;
     gap: 2rem;
+    flex-wrap: wrap;
     margin-bottom: 1rem;
 
     li {

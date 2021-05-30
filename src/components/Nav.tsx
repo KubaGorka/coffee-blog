@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,19 +10,7 @@ import { ReactComponent as Twitter } from "../assets/svg/Twitter.svg";
 import { ReactComponent as User } from "../assets/svg/User.svg";
 
 const Nav = () => {
-  const [username, setUsername] = useState(null);
-
   const { currentUser } = useAuth();
-
-  useEffect(() => {
-    if (currentUser !== null && currentUser !== undefined) {
-      if (currentUser.displayName !== null) {
-        setUsername(currentUser.displayName);
-      } else {
-        setUsername(currentUser.email);
-      }
-    }
-  }, [currentUser]);
 
   return (
     <div className={`${styles.container} Nav`}>
@@ -44,9 +32,9 @@ const Nav = () => {
       </Link>
 
       <div className={styles.login}>
-        {currentUser !== null ? (
+        {currentUser !== null && currentUser !== undefined ? (
           <>
-            <p className={styles.username}>Hello, {username}</p>
+            <p className={styles.username}>Hello, {currentUser.email}</p>
             <Link to="/account">
               <User />
             </Link>

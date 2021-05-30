@@ -1,27 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import styles from "./styles/Sign.module.scss";
 import { useAuth } from "../context/AuthContext";
 
 const SignIn = () => {
-  const [formEmail, setFormEmail] = useState("");
-  const [formPassword, setFormPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { signIn, currentUser } = useAuth();
-  const history = useHistory();
+  const emailValue = useRef<HTMLInputElement | null>(null);
+  const passwordValue = useRef<HTMLInputElement | null>(null);
 
-  if (currentUser !== null) {
-    history.push("/");
-  }
+  const { signIn } = useAuth();
+  const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    await signIn(formEmail, formPassword)
-      .then((result: any) => {})
+    await signIn(emailValue.current?.value, passwordValue.current?.value)
+      .then((result: any) => {
+        history.push("/");
+      })
       .catch((err: any) => {
         setLoading(false);
         setError("Invalid username or password");
@@ -38,24 +37,32 @@ const SignIn = () => {
         <div>
           <label>Login</label>
           <input
+            ref={emailValue}
             required
             type="email"
-            value={formEmail}
-            onChange={(e) => setFormEmail(e.target.value)}
+            onChange={() => {
+              if (error !== "") {
+                setError("");
+              }
+            }}
           />
         </div>
         <div>
           <label>Password</label>
           <p>Forgot passowrd?</p>
           <input
+            ref={passwordValue}
             required
             type="password"
-            value={formPassword}
-            onChange={(e) => setFormPassword(e.target.value)}
+            onChange={() => {
+              if (error !== "") {
+                setError("");
+              }
+            }}
           />
         </div>
         <input type="submit" value="Sign in" disabled={loading} />
-        {error !== "" ? <p>{error}</p> : null}
+        {error !== "" ? <p className='error'>{error}</p> : null}
         <Link to="/signup">Need an account? Sign up</Link>
       </form>
     </div>

@@ -1,38 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import styles from "./styles/Sign.module.scss";
 import { useAuth } from "../context/AuthContext";
+import firebase from "firebase";
 
 const SignUp = () => {
-  const [formEmail, setFormEmail] = useState("");
-  const [formPassword, setFormPassword] = useState("");
-  const [formConfirmPassword, setformConfirmPassword] = useState("");
-  const [passwordMatch, setFormPasswordMatch] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const emailValue = useRef<HTMLInputElement | null>(null);
+  const passwordValue = useRef<HTMLInputElement | null>(null);
+  const passwordConfirmValue = useRef<HTMLInputElement | null>(null);
 
   const { signUp, currentUser } = useAuth();
   const history = useHistory();
-
-  if (currentUser !== null) {
-    history.push("/");
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    if (!passwordMatch) {
+    if (passwordValue.current?.value !== passwordConfirmValue.current?.value) {
       setLoading(false);
       setError(`Passwords don't match`);
       return;
     }
 
-    await signUp(formEmail, formPassword)
-      .then((result: any) => {
-        history.push("/signin");
+    await signUp(emailValue.current?.value, passwordValue.current?.value)
+      .then(() => {
+        setMessage('Account has been created!')
       })
-      .catch((err: any) => {
+      .catch((err: firebase.FirebaseError) => {
         setLoading(false);
         setError(err.message);
       });
@@ -49,36 +47,44 @@ const SignUp = () => {
           <label>Login</label>
           <input
             required
+            ref={emailValue}
             type="email"
-            value={formEmail}
-            onChange={(e) => setFormEmail(e.target.value)}
+            onChange={() => {
+              if (error !== "") {
+                setError("");
+              }
+            }}
           />
         </div>
         <div>
           <label>Password</label>
           <input
+            ref={passwordValue}
             required
             type="password"
-            value={formPassword}
-            onChange={(e) => {
-              setFormPassword(e.target.value);
-              setFormPasswordMatch(formPassword === formConfirmPassword);
+            onChange={() => {
+              if (error !== "") {
+                setError("");
+              }
             }}
           />
         </div>
         <div>
           <label>Confirm password</label>
           <input
+            ref={passwordConfirmValue}
             required
             type="password"
-            onChange={(e) => {
-              setformConfirmPassword(e.target.value);
-              setFormPasswordMatch(formPassword === formConfirmPassword);
+            onChange={() => {
+              if (error !== "") {
+                setError("");
+              }
             }}
           />
         </div>
         <input type="submit" value="Sign up" disabled={loading} />
-        {error !== "" ? <p>{error}</p> : null}
+        {error !== "" ? <p className='error'>{error}</p> : null}
+        {message !== "" ? <p className='message'>{message}</p> : null}
         <Link to="/signin">Already a member? Sign in</Link>
       </form>
     </div>
