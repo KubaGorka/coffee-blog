@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import "./styles/styles.scss";
 
 import Nav from "./components/Nav";
-import SignIn from "./components/SignIn";
-import SignUp from "./components/SignUp";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import BlogEntry from "./components/BlogEntry";
-import Account from "./components/Account";
-import Stories from "./components/Stories";
+import Account from "./pages/Account";
+import Stories from "./pages/Stories";
 
 import { AuthProvider } from "./context/AuthContext";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -25,38 +25,38 @@ interface IPost {
 
 function App() {
   const [posts, setPosts] = useState<IPost[]>([]);
-
-  const db = firebase.firestore();
-  const storage = firebase.storage();
-  const storageRef = storage.ref();
   const numberOfPosts = 5;
 
-  const getPosts = () => {
-    db.collection("blog") // Get X newest posts from firebase
-      .orderBy("Date", "desc")
-      .limit(numberOfPosts)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          let data = doc.data() as IPost;
-          data.ID = doc.id;
-          storageRef
-            .child(data.Image)
-            .getDownloadURL()
-            .then((url) => {
-              data.Image = url;
-              setPosts((posts) => [...posts, data]);
-            })
-            .catch(() => {
-              console.log("Image not found for", data.Image);
-            });
-        });
-      });
-  };
+  useEffect(() => { //
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    const storageRef = storage.ref();
 
-  useEffect(() => {
+    const getPosts = () => {
+      db.collection("blog") // Get X newest posts from firebase
+        .orderBy("Date", "desc")
+        .limit(numberOfPosts)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let data = doc.data() as IPost;
+            data.ID = doc.id;
+            storageRef
+              .child(data.Image)
+              .getDownloadURL()
+              .then((url) => {
+                data.Image = url;
+                setPosts((posts) => [...posts, data]);
+              })
+              .catch(() => {
+                console.log("Image not found for", data.Image);
+              });
+          });
+        });
+    };
+
     getPosts();
-  }, []);
+  }, [setPosts]);
 
   return (
     <div className="App">
@@ -86,7 +86,7 @@ function App() {
             </Route>
             <Route path="/blog"></Route>
 
-            <Route path="/">
+            <Route path="/"> 
               {posts.map((post, index) => {
                 return (
                   <Link to={`/post/${post.ID}`} key={index}>

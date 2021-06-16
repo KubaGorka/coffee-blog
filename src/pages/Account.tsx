@@ -48,7 +48,7 @@ const Account = () => {
       </div>
       <div className={styles.information}>
         <h3>Information</h3>
-        <p>Email: {currentUser.email}</p>
+        <p>Email: {currentUser?.email}</p>
       </div>
     </div>
   );
