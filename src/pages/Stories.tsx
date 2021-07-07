@@ -1,22 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./styles/Stories.module.scss";
-
 import { useAuth } from "../context/AuthContext";
 
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
+import LoadingSpinner from "../components/LoadingSpinner";
+
+// TODO:
+// fix styling on form
+// add image upload date to sort them
 
 const Stories = () => {
   const [imageURLs, setImageURLs] = useState<string[]>([]);
   const [error, setError] = useState("");
-  const [columns, setColumns] = useState<any[]>();
+  const [loading, setLoading] = useState(true);
+  const [columns, setColumns] = useState<number>(0);
 
   const nameRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const fileRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const containerRef = useRef() as React.MutableRefObject<HTMLDivElement>;
 
   const { currentUser } = useAuth();
+
   const pageSize = 20;
   const db = firebase.firestore();
   const storageRef = firebase.storage().ref();
@@ -28,7 +34,7 @@ const Stories = () => {
       return;
     }
 
-    if (!fileRef.current.files) {
+    if (!fileRef.current.files || fileRef.current.files[0] === undefined) {
       setError("Please upload an image");
       return;
     }
@@ -46,12 +52,14 @@ const Stories = () => {
           if (fileRef.current.files && fileRef.current.files.length > 0) {
             let newFileRef = storageRef.child(docRef.id);
             newFileRef.put(fileRef.current.files[0]).then((snapshot) => {
-              console.log("Uploaded a blob or file!");
+              console.log("Uploaded!");
             });
             return docRef;
           }
         })
         .then((docRef) => {
+          nameRef.current.value = "";
+          fileRef.current.value = "";
           if (docRef) {
             db.collection("stories")
               .doc(docRef.id)
@@ -65,8 +73,6 @@ const Stories = () => {
         });
     }
   };
-
-  const renderColumns = () => {};
 
   useEffect(() => {
     const getURLs = () => {
@@ -87,14 +93,28 @@ const Stories = () => {
         })
         .catch((error) => {
           console.log(error);
-        });
+        })
+        .finally(() => setLoading(false));
     };
 
-    getURLs();
+    if (loading) getURLs();
+  }, [loading]);
+
+  useEffect(() => {
+    function setNumberOfColumns() {
+      setColumns(Math.floor(containerRef.current.offsetWidth / 450) + 1);
+    }
+    setNumberOfColumns();
+
+    window.addEventListener("resize", setNumberOfColumns);
+
+    return () => {
+      window.removeEventListener("resize", setNumberOfColumns);
+    };
   }, []);
 
   return (
-    <div className={styles.container} ref={containerRef}>
+    <>
       {currentUser ? (
         <div className={styles.addStory}>
           <h3>Add new story</h3>
@@ -102,7 +122,6 @@ const Stories = () => {
             <label>Name:</label>
             <input type="text" ref={nameRef} onChange={() => setError("")} />
             <label>File:</label>
-
             <input
               type="file"
               accept="image/png, image/jpeg"
@@ -114,11 +133,28 @@ const Stories = () => {
           {error !== "" ? <p className="error">{error}</p> : null}
         </div>
       ) : null}
-
-      {imageURLs.map((url, index) => {
-        return <img src={url} alt="Coffee" key={index} />;
-      })}
-    </div>
+      <LoadingSpinner
+        color="#6A6A6A"
+        height="4rem"
+        width=".5rem"
+        loading={loading}
+      />
+      <div className={styles.container} ref={containerRef}>
+        {Array(columns)
+          .fill(null)
+          .map((_, index) => {
+            return (
+              <div key={`column-${index}`} className={styles.column}>
+                {imageURLs
+                  .filter((x, i) => i % columns === index)
+                  .map((url, index2) => {
+                    return <img src={url} alt="Coffee" key={index2} />;
+                  })}
+              </div>
+            );
+          })}
+      </div>
+    </>
   );
 };
 

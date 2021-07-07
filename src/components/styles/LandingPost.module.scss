@@ -1,0 +1,67 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.primary {
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2rem;
+  img {
+    max-width: 100%;
+    height: clamp(20rem,100%,100%);
+    object-fit: cover;
+  }
+}
+
+.secondary {
+  display: grid;
+  grid-template-columns: 10rem auto;
+  gap: .5rem;
+  .content{
+    align-self: center;
+  }
+}
+.post {
+  img {
+    border-radius: 1rem;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  .date {
+    color: $DarkGrey;
+    font-weight: 600;
+  }
+  .title {
+    color: $Dark;
+  }
+}
+
+@media (min-width: $bp-medium) {
+  .primary {
+    grid-template-columns: 50% auto;
+    gap: 2rem;
+    align-items: center;
+    text-align: initial;
+    h1 {
+      font-size: 3rem;
+    }
+    img {
+      width: 100%;
+      min-height: 25rem;
+    }
+  }
+  .secondary {
+    display: grid;
+    grid-template-columns: initial;
+    gap: 1rem;
+  }
+}
+
+@media (min-width: $bp-xlarge) {
+
+}

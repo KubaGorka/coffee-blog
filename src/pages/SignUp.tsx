@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./styles/Sign.module.scss";
 import { useAuth } from "../context/AuthContext";

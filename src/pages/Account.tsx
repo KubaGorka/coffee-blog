@@ -9,26 +9,24 @@ import SignOut from "../assets/svg/SignOut.svg";
 import Edit from "../assets/svg/Edit.svg";
 
 const Account = () => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const { currentUser, signOut } = useAuth();
   const history = useHistory();
-  console.log(currentUser);
 
   async function logOut() {
-    setLoading(true);
     await signOut()
       .then(() => {
         history.push("/");
       })
       .catch((err: firebase.FirebaseError) => {
-        setLoading(false);
         setError(err.message);
       });
   }
 
   return (
+    <>
+    {error && <p>{error}</p>}
     <div className={styles.container}>
       <h1>Profile</h1>
       <div className={styles.buttons}>
@@ -51,6 +49,7 @@ const Account = () => {
         <p>Email: {currentUser?.email}</p>
       </div>
     </div>
+    </>
   );
 };
 

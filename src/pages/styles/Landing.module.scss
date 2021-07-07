@@ -1,0 +1,51 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.container {
+  display: grid;
+  margin: 2rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(325px, 1fr));
+  gap: 4rem;
+  a:nth-of-type(1) {
+    grid-column: 1 / -1;
+  }
+  a {
+    display: block;
+    img {
+      width: 100%;
+    }
+  }
+
+  button {
+    grid-column: 1 / -1;
+    width: 20%;
+    justify-self: center;
+    @include button;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-width: 10rem;
+    a {
+      color: #fff;
+    }
+  }
+}
+
+@media (min-width: $bp-small) {
+  .container {
+    //grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+@media (min-width: $bp-medium) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto 1fr 1fr;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .container {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto 1fr 1fr;
+  }
+}

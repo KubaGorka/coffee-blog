@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import firebase from "firebase/app";
-import "firebase/firestore";
+//import "firebase/firestore";
+
 import { auth } from "../firebaseSetup";
 
 interface IProps {
@@ -29,8 +30,6 @@ export function useAuth() {
 export const AuthProvider = ({ children }: IProps) => {
   const [currentUser, setCurrentUser] = useState<firebase.User | null>();
 
-  // const db = firebase.firestore();
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
@@ -44,14 +43,6 @@ export const AuthProvider = ({ children }: IProps) => {
     password: string
   ): Promise<firebase.auth.UserCredential> => {
     return auth.createUserWithEmailAndPassword(email, password);
-
-    // createUser.then((credentials) => {
-    //   db.collection("users").doc(credentials.user?.uid).set({
-    //     email: email,
-    //     userID: credentials.user?.uid,
-    //     username: email,
-    //   });
-    // });
   };
 
   const signIn = (
@@ -61,7 +52,7 @@ export const AuthProvider = ({ children }: IProps) => {
     return auth.signInWithEmailAndPassword(email, password);
   };
 
-  const signOut = (): Promise<any> => {
+  const signOut = (): Promise<void> => {
     return auth.signOut();
   };
 
