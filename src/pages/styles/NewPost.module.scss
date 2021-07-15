@@ -1,0 +1,29 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  input,
+  textarea {
+    @include input;
+  }
+
+  input[type="submit"] {
+    text-align: center;
+  }
+  input[type="file"] {
+    cursor: pointer;
+  }
+  textarea {
+    min-height: 10rem;
+    resize: vertical;
+  }
+}

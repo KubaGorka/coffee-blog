@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 import styles from "./styles/Nav.module.scss";
@@ -26,39 +26,36 @@ const Nav = () => {
         </a>
       </div>
 
-      <Link to="/" className={styles.logo}>
+      <NavLink to="/" className={styles.logo}>
         <h1>caffeine.</h1>
         <p>Just another coffee blog</p>
-      </Link>
+      </NavLink>
 
       <div className={styles.login}>
         {currentUser !== null && currentUser !== undefined ? (
           <>
             <p className={styles.username}>Hello, {currentUser.email}</p>
-            <Link to="/account">
+            <NavLink to="/account">
               <User />
-            </Link>
+            </NavLink>
           </>
         ) : (
-          <Link to="/signin">
+          <NavLink to="/signin">
             <User />
-          </Link>
+          </NavLink>
         )}
       </div>
 
       <ul className={styles.menu}>
-        <Link to="/">
+        <NavLink to="/" activeClassName={styles.active}>
           <li>Home</li>
-        </Link>
-        <Link to="/stories">
+        </NavLink>
+        <NavLink to="/stories" activeClassName={styles.active}>
           <li>Stories</li>
-        </Link>
-        <Link to="/blog">
+        </NavLink>
+        <NavLink to="/blog" activeClassName={styles.active}>
           <li>Blog</li>
-        </Link>
-        <Link to="/about">
-          <li>About</li>
-        </Link>
+        </NavLink>
       </ul>
     </div>
   );

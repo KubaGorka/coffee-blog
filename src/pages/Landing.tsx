@@ -2,33 +2,29 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import styles from "./styles/Landing.module.scss";
-
 import firebase from "firebase/app";
-import "firebase/storage";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { db, storage } from "../firebaseSetup";
 
-interface IPost {
-  ID: string;
-  Author: string;
-  Content: string;
-  Image: string;
-  Name: string;
-  Date: number;
-}
+import LoadingSpinner from "../components/LoadingSpinner";
+import { IPost } from "../interfaces/IPost";
 
 const Landing = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [posts, setPosts] = useState<IPost[]>([]);
   const pageSize = 7;
 
-  
-
-
   useEffect(() => {
     let isMounted = true;
-    const db = firebase.firestore();
-    const storage = firebase.storage();
     const storageRef = storage.ref();
+
+    // db.collection("blog").add({
+    //   Author: "W4YHgs10q2TyTvelMAatfeImfSz1",
+    //   Content:
+    //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla fringilla semper pellentesque. Donec commodo laoreet iaculis. Nulla eu ullamcorper ex.",
+    //   Date: new Date().getTime(),
+    //   Image: "7VpP5g4Ywhw9ODeBEEy6.jpg",
+    //   Name: "Splashing into a cup",
+    // });
 
     const getImageURL = async (
       doc: firebase.firestore.DocumentData

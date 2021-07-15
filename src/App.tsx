@@ -13,7 +13,7 @@ const SignUp = lazy(() => import("./pages/SignUp"));
 const Account = lazy(() => import("./pages/Account"));
 const Stories = lazy(() => import("./pages/Stories"));
 const Blog = lazy(() => import("./pages/Blog"));
-const About = lazy(() => import("./pages/About"));
+const NewPost = lazy(() => import("./pages/NewPost"));
 
 function App() {
   return (
@@ -46,17 +46,15 @@ function App() {
                 <Stories />
               </Route>
 
-              <Route path="/about">
-                <About />
-              </Route>
-
               <Route path="/blog">
                 <Blog />
               </Route>
 
               <Route path="/post"></Route>
 
-              <Route path="/addpost"></Route>
+              <Route path="/addpost">
+                <NewPost />
+              </Route>
 
               <Route path="/">
                 <Landing />

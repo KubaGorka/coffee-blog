@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import styles from "./styles/Blog.module.scss";
 import { useAuth } from "../context/AuthContext";
 
+import { useHistory } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/storage";
+import { db, storage } from "../firebaseSetup";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 import { ReactComponent as ArrowLeft } from "../assets/svg/ArrowLeft.svg";
@@ -26,6 +28,8 @@ const Blog = () => {
   const [size, setSize] = useState<number>(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+
+  //Track first and last document for paging purposes
   const [lastDocument, setLastDocument] =
     useState<firebase.firestore.DocumentData>();
   const [firstDocument, setFirstDocument] =
@@ -33,16 +37,16 @@ const Blog = () => {
 
   const { currentUser } = useAuth();
 
-  const pageSize = 6;
-  const db = firebase.firestore();
-  const storageRef = firebase.storage().ref();
+  const history = useHistory();
+  const pageSize = 12;
+
 
   const getImageURL = async (
     doc: firebase.firestore.DocumentData
   ): Promise<firebase.firestore.DocumentData> => {
     let data = doc.data() as IPost;
     data.ID = doc.id;
-    return await storageRef
+    return await storage.ref()
       .child(data.Image)
       .getDownloadURL()
       .then((url) => {
@@ -140,7 +144,14 @@ const Blog = () => {
 
   return (
     <div className={styles.container}>
-      {currentUser && <button className={styles.button}>Add new post</button>}
+      {currentUser && (
+        <button
+          className={styles.button}
+          onClick={() => history.push("/addpost")}
+        >
+          Add new post
+        </button>
+      )}
 
       {loading ? (
         <LoadingSpinner loading={loading} />
@@ -164,7 +175,6 @@ const Blog = () => {
           </div>
 
           <div className={styles.navigation}>
-            
             {page !== 1 ? (
               <ArrowLeft
                 onClick={() => {
@@ -176,7 +186,9 @@ const Blog = () => {
                     .catch((err) => console.log(err));
                 }}
               />
-            ) : <span className={styles.filler}> </span>}
+            ) : (
+              <span className={styles.filler}> </span>
+            )}
 
             {page !== size ? (
               <ArrowRight
@@ -189,8 +201,9 @@ const Blog = () => {
                     .catch((err) => console.log(err));
                 }}
               />
-            ) : <span className={styles.filler}> </span>}
-
+            ) : (
+              <span className={styles.filler}> </span>
+            )}
           </div>
         </>
       )}

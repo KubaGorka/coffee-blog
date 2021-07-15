@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./styles/Stories.module.scss";
 import { useAuth } from "../context/AuthContext";
+import { db, storage } from "../firebaseSetup";
 
-import firebase from "firebase/app";
-import "firebase/firestore";
-import "firebase/storage";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 // TODO:
-// fix styling on form
 // add image upload date to sort them
 
 const Stories = () => {
@@ -24,8 +21,6 @@ const Stories = () => {
   const { currentUser } = useAuth();
 
   const pageSize = 20;
-  const db = firebase.firestore();
-  const storageRef = firebase.storage().ref();
 
   const addNewStory = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +45,7 @@ const Stories = () => {
         })
         .then((docRef) => {
           if (fileRef.current.files && fileRef.current.files.length > 0) {
-            let newFileRef = storageRef.child(docRef.id);
+            let newFileRef = storage.ref().child(docRef.id);
             newFileRef.put(fileRef.current.files[0]).then((snapshot) => {
               console.log("Uploaded!");
             });
@@ -76,7 +71,8 @@ const Stories = () => {
 
   useEffect(() => {
     const getURLs = () => {
-      storageRef
+      storage
+        .ref()
         .child("")
         .list({ maxResults: pageSize })
         .then((res) => {
@@ -93,6 +89,7 @@ const Stories = () => {
         })
         .catch((error) => {
           console.log(error);
+          setError(error);
         })
         .finally(() => setLoading(false));
     };
