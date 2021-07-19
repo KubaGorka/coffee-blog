@@ -2,54 +2,68 @@
 @import "../../styles/variables";
 
 .container {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  grid-template-columns: 1fr 1fr;
-  .buttons {
+
+  .top {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
     .button {
-      width: 2rem;
-      height: 2rem;
+      @include button;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      width: 10rem;
+      img {
+        height: 2rem;
+      }
     }
   }
 
   .avatar {
-    grid-column: span 2;
-    justify-self: center;
+    align-self: center;
     border: 2px solid $DarkGrey;
     border-radius: 50%;
     height: 10rem;
     width: 10rem;
   }
 
-  .statistics,
   .information {
-    grid-column: span 2;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 1rem;
+    text-align: center;
+
+    .stats {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
   }
 }
 
-@media (min-width: $bp-medium) {
-  .container {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, auto);
-    .buttons {
-      grid-column: span 2;
-    }
-    .avatar {
-      grid-column: 1/2;
-    }
-    .statistics {
-      grid-column: 2/3;
-    }
+// @media (min-width: $bp-medium) {
+//   .container {
+//     grid-template-columns: repeat(3, 1fr);
+//     grid-template-rows: repeat(3, auto);
+//     .buttons {
+//       grid-column: span 2;
+//     }
+//     .avatar {
+//       grid-column: 1/2;
+//     }
+//     .statistics {
+//       grid-column: 2/3;
+//     }
 
-    .information {
-      grid-column: 3/4;
-    }
-  }
-}
+//     .information {
+//       grid-column: 3/4;
+//     }
+//   }
+// }

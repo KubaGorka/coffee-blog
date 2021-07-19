@@ -21,10 +21,10 @@
     width: 20%;
     justify-self: center;
     @include button;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+
     min-width: 10rem;
     a {
+      padding: 0.5rem 0;
       color: #fff;
     }
   }

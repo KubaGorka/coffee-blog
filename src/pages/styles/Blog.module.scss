@@ -8,13 +8,14 @@
 
 .button {
   @include button;
+  padding: 1rem 0 !important;
 }
 .posts {
   margin: 1rem auto;
   display: grid;
   width: 100%;
   gap: 2rem;
-  h1{
+  h1 {
     font-size: 1.5rem;
   }
   a {
@@ -28,41 +29,43 @@
   display: flex;
   justify-content: center;
   gap: 2rem;
-  .filler{
+  .filler {
     width: 3rem;
     height: 3rem;
   }
-  svg{
+  svg {
     cursor: pointer;
     width: 3rem;
     height: 3rem;
-    path{
-      stroke:#000;
+    path {
+      stroke: #000;
     }
   }
 }
 
-@media (min-width: $bp-small){
-  .button{
+.errorMessage {
+  @include errorMessage;
+}
+
+@media (min-width: $bp-small) {
+  .button {
     width: 20rem;
     margin: 1rem 0 1rem auto;
-
   }
-  .posts{
+  .posts {
     grid-template-columns: 1fr 1fr;
-    
   }
 }
 
-@media (min-width: $bp-medium){
-  .posts{
+@media (min-width: $bp-medium) {
+  .posts {
     grid-template-columns: repeat(3, 1fr);
     gap: 4rem;
   }
 }
 
-@media (min-width: $bp-large){
-  .posts{
+@media (min-width: $bp-large) {
+  .posts {
     grid-template-columns: repeat(4, 1fr);
     gap: 4rem;
   }

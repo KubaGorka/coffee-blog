@@ -1,21 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import styles from "./styles/Account.module.scss";
 import { Redirect, useHistory } from "react-router-dom";
-import firebase from "firebase";
+import { db } from "../firebaseSetup";
 
+import firebase from "firebase/app";
 import User from "../assets/svg/User.svg";
 import SignOut from "../assets/svg/SignOut.svg";
-import Edit from "../assets/svg/Edit.svg";
+
+// TODO:
+// Add 'Edit profile' button
 
 const Account = () => {
+  const [numberOfPosts, setnumberOfPosts] = useState<number>();
+  const [numberOfStories, setnumberOfStories] = useState<number>();
   const [error, setError] = useState("");
 
   const { currentUser, signOut } = useAuth();
   const history = useHistory();
 
-  async function logOut() {
-    await signOut()
+  function logOut() {
+    signOut()
       .then(() => {
         history.push("/");
       })
@@ -23,6 +28,29 @@ const Account = () => {
         setError(err.message);
       });
   }
+
+  useEffect(() => {
+    const getNumberOfUserEntriesFromCollection = async (
+      collectionName: string
+    ): Promise<number> => {
+      return db
+        .collection(collectionName)
+        .where("Author", "==", currentUser?.uid)
+        .get()
+        .then((snapshot) => {
+          return snapshot.size;
+        });
+    };
+
+    if (currentUser) {
+      getNumberOfUserEntriesFromCollection("blog").then((value) => {
+        setnumberOfPosts(value);
+      });
+      getNumberOfUserEntriesFromCollection("stories").then((value) => {
+        setnumberOfStories(value);
+      });
+    }
+  }, [currentUser]);
 
   if (!currentUser) {
     return <Redirect to="/" />;
@@ -32,25 +60,23 @@ const Account = () => {
     <>
       {error && <p>{error}</p>}
       <div className={styles.container}>
-        <h1>Profile</h1>
-        <div className={styles.buttons}>
-          <img src={Edit} alt="Edit" className={styles.button} />
-          <img
-            src={SignOut}
-            alt="Sign Out"
-            onClick={() => logOut()}
-            className={styles.button}
-          />
+        <div className={styles.top}>
+          <h1>Profile</h1>
+
+          <div className={styles.button} onClick={() => logOut()}>
+            <p>Sign out</p>
+            <img src={SignOut} alt="Sign Out" />
+          </div>
         </div>
+
         <img src={User} alt="User avatar" className={styles.avatar} />
-        <div className={styles.statistics}>
-          <h3>Statistics</h3>
-          <p>Posts:</p>
-          <p>Stories:</p>
-        </div>
+
         <div className={styles.information}>
-          <h3>Information</h3>
-          <p>Email: {currentUser?.email}</p>
+          <p>{currentUser?.email}</p>
+          <div className={styles.stats}>
+            <p>Posts: {numberOfPosts}</p>
+            <p>Stories: {numberOfStories}</p>
+          </div>
         </div>
       </div>
     </>

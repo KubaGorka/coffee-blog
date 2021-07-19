@@ -90,3 +90,9 @@
     filter: brightness(1.2);
   }
 }
+
+@mixin errorMessage {
+  color: #ff3a3a;
+  font-size: 1.25rem;
+  text-align: center;
+}

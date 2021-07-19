@@ -13,6 +13,7 @@ const SignUp = lazy(() => import("./pages/SignUp"));
 const Account = lazy(() => import("./pages/Account"));
 const Stories = lazy(() => import("./pages/Stories"));
 const Blog = lazy(() => import("./pages/Blog"));
+const Post = lazy(() => import("./pages/Post"));
 const NewPost = lazy(() => import("./pages/NewPost"));
 
 function App() {
@@ -50,7 +51,9 @@ function App() {
                 <Blog />
               </Route>
 
-              <Route path="/post"></Route>
+              <Route path="/post/:postId">
+                <Post/>
+              </Route>
 
               <Route path="/addpost">
                 <NewPost />

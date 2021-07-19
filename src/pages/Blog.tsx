@@ -24,8 +24,8 @@ interface IPost {
 
 const Blog = () => {
   const [posts, setPosts] = useState<firebase.firestore.DocumentData[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(0);
+  const [page, setPage] = useState<number>(1); //current page
+  const [size, setSize] = useState<number>(0); //number of pages
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -36,46 +36,25 @@ const Blog = () => {
     useState<firebase.firestore.DocumentData>();
 
   const { currentUser } = useAuth();
-
   const history = useHistory();
   const pageSize = 12;
-
 
   const getImageURL = async (
     doc: firebase.firestore.DocumentData
   ): Promise<firebase.firestore.DocumentData> => {
     let data = doc.data() as IPost;
     data.ID = doc.id;
-    return await storage.ref()
+    return await storage
+      .ref()
       .child(data.Image)
       .getDownloadURL()
       .then((url) => {
         data.Image = url;
         return data;
       })
-      .catch(() => {
+      .catch((err) => {
         console.log("Image not found for", data.Image);
         return data;
-      });
-  };
-
-  const getInitialPosts = (): Promise<firebase.firestore.DocumentData[]> => {
-    return db
-      .collection("blog")
-      .orderBy("Date", "desc")
-      .limit(pageSize)
-      .get()
-      .then((querySnapshot) => {
-        let snapshotsArray: firebase.firestore.DocumentData[] = [];
-        setFirstDocument(querySnapshot.docs[0]);
-        setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
-        querySnapshot.forEach((doc) => {
-          snapshotsArray.push(doc);
-        });
-        return snapshotsArray.map((doc) => getImageURL(doc));
-      })
-      .then((arr) => {
-        return Promise.all(arr);
       });
   };
 
@@ -124,18 +103,42 @@ const Blog = () => {
   useEffect(() => {
     let isMounted = true;
 
+    const getInitialPosts = (): Promise<firebase.firestore.DocumentData[]> => {
+      return db
+        .collection("blog")
+        .orderBy("Date", "desc")
+        .limit(pageSize)
+        .get()
+        .then((querySnapshot) => {
+          let snapshotsArray: firebase.firestore.DocumentData[] = [];
+          setFirstDocument(querySnapshot.docs[0]);
+          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
+          querySnapshot.forEach((doc) => {
+            snapshotsArray.push(doc);
+          });
+          return snapshotsArray.map((doc) => getImageURL(doc));
+        })
+        .then((arr) => {
+          return Promise.all(arr);
+        });
+    };
+
     db.collection("blog")
       .get()
       .then((snap) => {
         setSize(Math.ceil(snap.size / pageSize));
       });
 
-    getInitialPosts().then((values) => {
-      if (isMounted) {
-        setPosts([...values]);
-        setLoading(false);
-      }
-    });
+    getInitialPosts()
+      .then((values) => {
+        if (isMounted) {
+          setPosts([...values]);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        setError("Error while fetching data");
+      });
 
     return () => {
       isMounted = false;
@@ -152,6 +155,8 @@ const Blog = () => {
           Add new post
         </button>
       )}
+
+      {error && <p className={styles.errorMessage}>{error}</p>}
 
       {loading ? (
         <LoadingSpinner loading={loading} />
@@ -183,7 +188,7 @@ const Blog = () => {
                     .then((values) => {
                       setPosts(() => [...values]);
                     })
-                    .catch((err) => console.log(err));
+                    .catch(() => setError("Error while fetching data"));
                 }}
               />
             ) : (
@@ -198,7 +203,7 @@ const Blog = () => {
                     .then((values) => {
                       setPosts(() => [...values]);
                     })
-                    .catch((err) => console.log(err));
+                    .catch(() => setError("Error while fetching data"));
                 }}
               />
             ) : (
