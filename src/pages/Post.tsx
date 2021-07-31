@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./styles/Post.module.scss";
 import { useParams } from "react-router-dom";
 import { IPost } from "../interfaces/IPost";
-import { db, fetchImageURLbyId } from "../firebaseSetup";
+import { db, getImageURL } from "../firebaseSetup";
 
 //TODO:
 //Get html-react-parser to work
@@ -20,7 +20,7 @@ const Post = () => {
       .doc(postId)
       .get()
       .then((doc) => {
-        return fetchImageURLbyId(doc);
+        return getImageURL(doc);
       })
       .then((newDoc) => {
         setPost(newDoc as IPost);

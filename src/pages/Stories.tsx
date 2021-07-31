@@ -5,11 +5,11 @@ import { db, storage } from "../firebaseSetup";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 
-// TODO:
-// add image upload date to sort them
-
 const Stories = () => {
   const [imageURLs, setImageURLs] = useState<string[]>([]);
+  const [pageToken, setPageToken] = useState<string | null | undefined>(
+    undefined
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [columns, setColumns] = useState<number>(0);
@@ -20,7 +20,7 @@ const Stories = () => {
 
   const { currentUser } = useAuth();
 
-  const pageSize = 20;
+  const pageSize = 10;
 
   const addNewStory = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,43 +70,51 @@ const Stories = () => {
   };
 
   useEffect(() => {
-    const getURLs = () => {
-      storage
+    const getURLs = (): Promise<string[]> => {
+      return storage
         .ref()
-        .child("")
-        .list({ maxResults: pageSize })
+        .list({ maxResults: pageSize, pageToken: pageToken })
         .then((res) => {
-          res.items.forEach((itemRef) => {
-            itemRef
-              .getDownloadURL()
-              .then((url) => {
-                setImageURLs((imageURLs) => [...imageURLs, url]);
-              })
-              .catch((error) => {
-                console.log("Could not get URL");
-              });
+          setPageToken(res.nextPageToken);
+
+          const promisses: Promise<string>[] = res.items.map((item) => {
+            return item.getDownloadURL();
           });
-        })
-        .catch((error) => {
-          console.log(error);
-          setError(error);
+
+          return Promise.all(promisses);
         })
         .finally(() => setLoading(false));
     };
 
-    if (loading) getURLs();
+    if (loading && pageToken !== null) {
+      getURLs().then((res) => {
+        setImageURLs((imageURLs) => [...imageURLs, ...res]);
+      });
+    }
+    console.log("loading changed", loading);
   }, [loading]);
 
+  //Listeners for number of columns and fetching more data
   useEffect(() => {
     function setNumberOfColumns() {
       setColumns(Math.floor(containerRef.current.offsetWidth / 450) + 1);
     }
     setNumberOfColumns();
 
+    function checkIfNearBottom() {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        if (pageToken !== null) {
+          setLoading(true);
+        }
+      }
+    }
+
     window.addEventListener("resize", setNumberOfColumns);
+    window.addEventListener("scroll", checkIfNearBottom);
 
     return () => {
       window.removeEventListener("resize", setNumberOfColumns);
+      window.removeEventListener("scroll", checkIfNearBottom);
     };
   }, []);
 
@@ -130,12 +138,7 @@ const Stories = () => {
           {error !== "" ? <p className="error">{error}</p> : null}
         </div>
       ) : null}
-      <LoadingSpinner
-        color="#6A6A6A"
-        height="4rem"
-        width=".5rem"
-        loading={loading}
-      />
+
       <div className={styles.container} ref={containerRef}>
         {Array(columns)
           .fill(null)
@@ -151,6 +154,13 @@ const Stories = () => {
             );
           })}
       </div>
+
+      <LoadingSpinner
+        color="#6A6A6A"
+        height="4rem"
+        width=".5rem"
+        loading={loading && pageToken ? true : false}
+      />
     </>
   );
 };

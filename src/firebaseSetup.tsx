@@ -21,19 +21,11 @@ const auth = app.auth();
 const db = app.firestore();
 const storage = app.storage();
 
-// TODO:
-// Put functions there to remove code repetition
-
-// const uploadImage = () => {};
-
-// const addNewPost = () => {};
-
-// const fetchPosts = () => {};
-
-export const fetchImageURLbyId = (
+export const getImageURL = (
   doc: firebase.firestore.DocumentData
-): Promise<firebase.firestore.DocumentData> => {
+): Promise<IPost> => {
   let data = doc.data() as IPost;
+  data.ID = doc.id;
   return storage
     .ref()
     .child(data.Image)
@@ -47,7 +39,6 @@ export const fetchImageURLbyId = (
       return data;
     });
 };
-
 
 export { app, auth, db, storage };
 export default app;

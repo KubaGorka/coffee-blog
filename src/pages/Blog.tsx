@@ -23,7 +23,7 @@ interface IPost {
 }
 
 const Blog = () => {
-  const [posts, setPosts] = useState<firebase.firestore.DocumentData[]>([]);
+  const [posts, setPosts] = useState<IPost[]>([]);
   const [page, setPage] = useState<number>(1); //current page
   const [size, setSize] = useState<number>(0); //number of pages
   const [error, setError] = useState("");
@@ -41,7 +41,7 @@ const Blog = () => {
 
   const getImageURL = async (
     doc: firebase.firestore.DocumentData
-  ): Promise<firebase.firestore.DocumentData> => {
+  ): Promise<IPost> => {
     let data = doc.data() as IPost;
     data.ID = doc.id;
     return await storage
@@ -58,7 +58,7 @@ const Blog = () => {
       });
   };
 
-  const getNextPage = (): Promise<firebase.firestore.DocumentData[]> => {
+  const getNextPage = (): Promise<IPost[]> => {
     return db
       .collection("blog") // Get X newest posts from firebase
       .orderBy("Date", "desc")
@@ -79,7 +79,7 @@ const Blog = () => {
       });
   };
 
-  const getPreviousPage = (): Promise<firebase.firestore.DocumentData[]> => {
+  const getPreviousPage = (): Promise<IPost[]> => {
     return db
       .collection("blog") // Get X newest posts from firebase
       .orderBy("Date", "desc")
@@ -103,7 +103,7 @@ const Blog = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const getInitialPosts = (): Promise<firebase.firestore.DocumentData[]> => {
+    const getInitialPosts = (): Promise<IPost[]> => {
       return db
         .collection("blog")
         .orderBy("Date", "desc")
