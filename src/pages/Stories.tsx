@@ -7,9 +7,6 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 const Stories = () => {
   const [imageURLs, setImageURLs] = useState<string[]>([]);
-  const [pageToken, setPageToken] = useState<string | null | undefined>(
-    undefined
-  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [columns, setColumns] = useState<number>(0);
@@ -17,6 +14,7 @@ const Stories = () => {
   const nameRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const fileRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const containerRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const pageTokenRef = useRef<string | null | undefined>(undefined);
 
   const { currentUser } = useAuth();
 
@@ -73,9 +71,9 @@ const Stories = () => {
     const getURLs = (): Promise<string[]> => {
       return storage
         .ref()
-        .list({ maxResults: pageSize, pageToken: pageToken })
+        .list({ maxResults: pageSize, pageToken: pageTokenRef.current })
         .then((res) => {
-          setPageToken(res.nextPageToken);
+          pageTokenRef.current = res.nextPageToken;
 
           const promisses: Promise<string>[] = res.items.map((item) => {
             return item.getDownloadURL();
@@ -86,12 +84,11 @@ const Stories = () => {
         .finally(() => setLoading(false));
     };
 
-    if (loading && pageToken !== null) {
+    if (loading && pageTokenRef.current !== null) {
       getURLs().then((res) => {
         setImageURLs((imageURLs) => [...imageURLs, ...res]);
       });
     }
-    console.log("loading changed", loading);
   }, [loading]);
 
   //Listeners for number of columns and fetching more data
@@ -103,7 +100,7 @@ const Stories = () => {
 
     function checkIfNearBottom() {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        if (pageToken !== null) {
+        if (pageTokenRef.current !== null) {
           setLoading(true);
         }
       }
@@ -159,7 +156,7 @@ const Stories = () => {
         color="#6A6A6A"
         height="4rem"
         width=".5rem"
-        loading={loading && pageToken ? true : false}
+        loading={loading && pageTokenRef.current ? true : false}
       />
     </>
   );
