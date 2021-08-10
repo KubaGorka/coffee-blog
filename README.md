@@ -17,4 +17,4 @@ Favicon from https://www.flaticon.com/
 
 
 
-[LINK]: /
+[LINK]: https://coffee-blog-site.netlify.app/
